@@ -135,8 +135,8 @@
 
   .ph-day-r b{font-weight:400;}
 
-  /* 收入:0 右偏移 0.8mm，支出保持原位 */
-  .ph-day-r .r-inc{width:auto;text-align:right;flex:0 0 auto;white-space:nowrap;margin-left:20px;transform:translateX(0.8mm);}
+  /* 收入:0 右偏移约 1cm，支出保持原位 */
+  .ph-day-r .r-inc{width:auto;text-align:right;flex:0 0 auto;white-space:nowrap;margin-left:20px;transform:translateX(1cm);}
   .ph-day-r .r-exp{width:72px;text-align:right;flex:0 0 auto;white-space:nowrap;}
   .ph-day-r .i,.ph-day-r .e{color:var(--ink-mid);}
 
@@ -315,6 +315,9 @@
   /* 参考图原图 + 点击覆盖层 */
   .ref-icon-img-wrap{position:relative;width:100%;grid-column:1/-1;overflow:visible;}
   .ref-icon-img-wrap > img{max-width:84%;margin:0;display:block;}
+  /* 半页弹窗（catSheet 快速选择 / beEdit 编辑面板）图标缩小至一半 */
+  .catSheet-scroll .ref-icon-img-wrap > img,
+  .be-top .ref-icon-img-wrap > img{max-width:42%;}
   .ref-click-zone{position:absolute;cursor:pointer;z-index:10;box-sizing:border-box;}
   .ref-click-zone:active{background:rgba(115,169,104,0.15);border-radius:8px;}
   .ref-sheet-wrap{margin:0;overflow:visible;}
@@ -1556,8 +1559,7 @@ var CLICK_ZONES_INC = [
 
 function renderCatGrid(el, list, selectedKey){
   var zones = CLICK_ZONES_FULL.map(function(z){
-    var hl = (z.k === selectedKey) ? ' box-shadow:0 0 0 2px #73A968;' : '';
-    return '<div class="ref-click-zone" data-k="'+z.k+'" data-n="'+z.n+'" style="left:'+z.l+'%;top:'+z.t+'%;width:'+z.w+'%;height:'+z.h+'%;'+hl+'"></div>';
+    return '<div class="ref-click-zone" data-k="'+z.k+'" data-n="'+z.n+'" style="left:'+z.l+'%;top:'+z.t+'%;width:'+z.w+'%;height:'+z.h+'%"></div>';
   }).join('');
   el.innerHTML = '<div class="ref-icon-img-wrap"><img src="'+REF_FULL+'" style="width:100%;display:block">'+zones+'</div>';
 }
@@ -1578,16 +1580,16 @@ function openCatFullPage(recId){
 
   if(catPickerCtx.recId){ var r = findRec(catPickerCtx.recId); if(r) sel = r.cat; }
 
-  /* 支出区：裁切支出部分（8图标） */
+  /* 支出区：裁切支出部分（8图标）— 不添加绿色描边，保持与参考图一致 */
   var expZones = CLICK_ZONES_EXP.map(function(z){
-    var hl = (z.k === sel) ? ' box-shadow:0 0 0 2px #73A968;' : '';
+    var hl = '';
     return '<div class="ref-click-zone" data-k="'+z.k+'" data-n="'+z.n+'" style="left:'+z.l+'%;top:'+z.t+'%;width:'+z.w+'%;height:'+z.h+'%;'+hl+'"></div>';
   }).join('');
   $('catGridExp').innerHTML = '<div class="ref-icon-img-wrap"><img src="'+REF_EXP+'" style="width:100%;display:block">'+expZones+'</div>';
 
-  /* 收入区：裁切收入部分（4图标） */
+  /* 收入区：裁切收入部分（4图标）— 不添加绿色描边，保持与参考图一致 */
   var incZones = CLICK_ZONES_INC.map(function(z){
-    var hl = (z.k === sel) ? ' box-shadow:0 0 0 2px #73A968;' : '';
+    var hl = '';
     return '<div class="ref-click-zone" data-k="'+z.k+'" data-n="'+z.n+'" style="left:'+z.l+'%;top:'+z.t+'%;width:'+z.w+'%;height:'+z.h+'%;'+hl+'"></div>';
   }).join('');
   $('catGridInc').innerHTML = '<div class="ref-icon-img-wrap"><img src="'+REF_INC+'" style="width:100%;display:block">'+incZones+'</div>';
