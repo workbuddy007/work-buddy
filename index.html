@@ -135,9 +135,8 @@
 
   .ph-day-r b{font-weight:400;}
 
-  /* 支出保持原位 */
-
-  .ph-day-r .r-inc{width:auto;text-align:right;flex:0 0 auto;white-space:nowrap;margin-left:20px;}
+  /* 收入:0 右偏移 0.8mm，支出保持原位 */
+  .ph-day-r .r-inc{width:auto;text-align:right;flex:0 0 auto;white-space:nowrap;margin-left:20px;transform:translateX(0.8mm);}
   .ph-day-r .r-exp{width:72px;text-align:right;flex:0 0 auto;white-space:nowrap;}
   .ph-day-r .i,.ph-day-r .e{color:var(--ink-mid);}
 
@@ -285,7 +284,7 @@
 
   /* 分区：支出 / 收入（左上角标题 + 4 列图标） */
 
-  .cat-section{padding:8px 0 4px;box-sizing:border-box;}
+  .cat-section{padding:8px 4px 4px 10px;box-sizing:border-box;}
 
   .cat-sec-title{font-size:15px;font-weight:600;color:#333;text-align:left;
 
@@ -315,7 +314,7 @@
 
   /* 参考图原图 + 点击覆盖层 */
   .ref-icon-img-wrap{position:relative;width:100%;grid-column:1/-1;overflow:visible;}
-  .ref-icon-img-wrap > img{max-width:90%;margin:0 auto;display:block;}
+  .ref-icon-img-wrap > img{max-width:84%;margin:0;display:block;}
   .ref-click-zone{position:absolute;cursor:pointer;z-index:10;box-sizing:border-box;}
   .ref-click-zone:active{background:rgba(115,169,104,0.15);border-radius:8px;}
   .ref-sheet-wrap{margin:0;overflow:visible;}
