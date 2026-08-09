@@ -135,9 +135,9 @@
 
   .ph-day-r b{font-weight:400;}
 
-  /* 收入:0 与支出:0 间距收窄，不额外右移 */
-  .ph-day-r .r-inc{width:auto;text-align:right;flex:0 0 auto;white-space:nowrap;margin-left:6px;}
-  .ph-day-r .r-exp{width:72px;text-align:right;flex:0 0 auto;white-space:nowrap;}
+  /* 收入:0 紧贴支出:0（按图二红圈箭头指示右移） */
+  .ph-day-r .r-inc{width:auto;text-align:right;flex:0 0 auto;white-space:nowrap;margin-left:2px;}
+  .ph-day-r .r-exp{width:auto;text-align:right;flex:0 0 auto;white-space:nowrap;}
   .ph-day-r .i,.ph-day-r .e{color:var(--ink-mid);}
 
 
@@ -517,29 +517,27 @@
 
     border-bottom:1px solid #f0f0f0;}
 
-  .catSheet-scroll{flex:1;overflow-y:auto;padding:8px 16px 20px;-webkit-overflow-scrolling:touch;}
+  .catSheet-scroll{flex:1;overflow-y:auto;padding:10px 12px 16px;-webkit-overflow-scrolling:touch;}
 
-  .catSheet-sec-title{font-size:14px;font-weight:600;color:#333;padding:12px 4px 6px;}
+  .catSheet-sec-title{font-size:15px;font-weight:600;color:#333;padding:10px 2px 8px;}
 
-  .catSheet-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px 4px;}
+  .catSheet-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 0;}
 
-  .catSheet-cell{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;padding:6px 0;
+  .catSheet-cell{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;padding:8px 0;
 
     -webkit-tap-highlight-color:transparent;border-radius:8px;}
 
   .catSheet-cell:active{background:#f5f5f5;}
 
-  .catSheet-circle{width:56px;height:56px;border-radius:50%;background:#f0f1ee;
-
-    background-size:65%;background-position:center;background-repeat:no-repeat;
+  .catSheet-circle{width:64px;height:64px;border-radius:50%;background:#f5f5f5;
 
     display:flex;align-items:center;justify-content:center;}
 
-  .catSheet-circle.cat-line svg{width:30px;height:30px;stroke:#4a4a4a;stroke-width:1.5;fill:none;
+  .catSheet-circle.cat-line svg{width:32px;height:32px;stroke:#4a4a4a;stroke-width:1.5;fill:none;
 
     stroke-linecap:round;stroke-linejoin:round;}
 
-  .catSheet-label{font-size:12px;color:#555;font-weight:400;}
+  .catSheet-label{font-size:13px;color:#666;font-weight:400;}
 
 
 
@@ -627,21 +625,17 @@
 
   .be-title{font-size:15px;font-weight:600;color:var(--bean-deep);text-align:center;margin:2px 0 8px;}
 
-  .be-sec-title{font-size:13px;font-weight:600;color:rgba(31,60,35,.72);padding:6px 12px 4px;display:none;}
+  .be-sec-title{font-size:14px;font-weight:600;color:rgba(31,60,35,.8);padding:10px 4px 6px;}
 
-  .be-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 0;}
+  .be-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 0;}
 
-  .be-cell{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;padding:4px 0;-webkit-tap-highlight-color:transparent;}
+  .be-cell{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;padding:6px 0;-webkit-tap-highlight-color:transparent;}
 
-  .be-circle{width:58px;height:58px;border-radius:50%;background-color:#f0f1ee;
+  .be-circle{width:58px;height:58px;border-radius:50%;background-color:#f5f5f5;
 
-    background-size:cover;background-position:center;background-repeat:no-repeat;
+    display:flex;align-items:center;justify-content:center;box-sizing:border-box;}
 
-    display:flex;align-items:center;justify-content:center;box-shadow:0 1px 2px rgba(31,60,35,.10);
-
-    box-sizing:border-box;transition:transform .12s, box-shadow .12s;}
-
-  .be-cell.sel .be-circle{box-shadow:0 0 0 3px var(--hi), 0 2px 6px rgba(31,60,35,.22);transform:scale(1.05);}
+  .be-cell.sel .be-circle{background-color:#e8e8e8;transform:scale(1.06);}
 
   .be-circle svg{width:32px;height:32px;stroke:#4a4a4a;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round;}
 
@@ -690,6 +684,26 @@
   /* 日期滚轮需盖在编辑弹窗之上 */
 
   .dp-mask{z-index:140;}
+
+
+  /* ========== 响应式布局（手机 / 平板 / 桌面） ========== */
+
+  /* 平板及更大屏幕：主容器居中限宽，模拟手机视口 */
+  @media (min-width: 481px){
+    body{background:#c8dcc8;display:flex;align-items:center;justify-content:center;}
+    .ph-wrap{max-width:480px;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.12);height:auto;min-height:100vh;}
+    .catSheet{max-width:480px;left:50%;transform:translateX(-50%);border-radius:16px 16px 0 0;}
+    .be-wrap{max-width:480px;}
+  }
+
+  /* 桌面端：更窄的容器 + 更精致的阴影 */
+  @media (min-width: 768px){
+    .ph-wrap{max-width:420px;box-shadow:0 8px 40px rgba(0,0,0,.15);}
+    .catSheet{max-width:420px;}
+    .be-wrap{max-width:420px;}
+  }
+
+  /* 小屏手机：保持原有全宽布局（无需额外规则） */
 
 </style>
 
@@ -2057,19 +2071,33 @@ function openCatSheet(recId){
 
 function closeCatSheet(){ $('catSheetMask').classList.remove('show'); catSheetRecId=null; }
 
-/* 渲染底部分类面板（线性 SVG 图标，造型与参考图一致） */
-
+/* 渲染半页分类面板（独立圆底图标网格，匹配参考图一布局） */
 function renderCatSheet(){
   var scroll=$('catSheetScroll');
-  var zones = CLICK_ZONES_FULL.map(function(z){
-    return '<div class="ref-click-zone" data-k="'+z.k+'" data-n="'+z.n+'" style="left:'+z.l+'%;top:'+z.t+'%;width:'+z.w+'%;height:'+z.h+'%"></div>';
+  /* 支出区：4列×2行 */
+  var expCells = EXP_CATS.map(function(c){
+    var ico = CAT_ICON_PNG[c.k] || '';
+    return '<div class="catSheet-cell" data-k="'+c.k+'" data-n="'+c.n+'" data-type="exp">'+
+      '<div class="catSheet-circle"><img src="'+ico+'" style="width:100%;height:100%;object-fit:contain;display:block;border-radius:50%;"></div>'+
+      '<div class="catSheet-label">'+c.n+'</div></div>';
   }).join('');
-  scroll.innerHTML = '<div class="ref-icon-img-wrap ref-sheet-wrap"><img src="'+REF_FULL+'" style="width:100%;display:block">'+zones+'</div>';
-  scroll.querySelectorAll('.ref-click-zone').forEach(function(zone){
-    zone.addEventListener('click', function(){
+  /* 收入区：4列×1行（间距更紧凑） */
+  var incCells = INC_CATS.map(function(c){
+    var ico = CAT_ICON_PNG[c.k] || '';
+    return '<div class="catSheet-cell" data-k="'+c.k+'" data-n="'+c.n+'" data-type="inc">'+
+      '<div class="catSheet-circle"><img src="'+ico+'" style="width:100%;height:100%;object-fit:contain;display:block;border-radius:50%;"></div>'+
+      '<div class="catSheet-label">'+c.n+'</div></div>';
+  }).join('');
+  scroll.innerHTML =
+    '<div class="catSheet-sec-title">支出</div>'+
+    '<div class="catSheet-grid">'+expCells+'</div>'+
+    '<div class="catSheet-sec-title" style="padding-top:6px;">收入</div>'+
+    '<div class="catSheet-grid">'+incCells+'</div>';
+  /* 绑定点击 */
+  scroll.querySelectorAll('.catSheet-cell').forEach(function(cell){
+    cell.addEventListener('click', function(){
       var k=this.getAttribute('data-k');
-      var type='exp';
-      for(var i=0;i<INC_CATS.length;i++){ if(INC_CATS[i].k===k){ type='inc'; break; } }
+      var type=this.getAttribute('data-type');
       var rec=findRec(catSheetRecId);
       if(rec){ rec.cat=k; rec.type=type; renderFlow(); renderHeader(); }
       closeCatSheet();
@@ -2273,22 +2301,31 @@ function findRec(id){
 
 
 
-/* 渲染编辑弹窗内分类网格（线性 SVG 图标，造型与参考图一致） */
-
-function renderBeImg(zones, imgSrc){
-  var zHtml = zones.map(function(z){
-    var sel=(beState && beState.cat===z.k)?' sel':'';
-    return '<div class="ref-click-zone'+sel+'" data-k="'+z.k+'" data-n="'+z.n+'" style="left:'+z.l+'%;top:'+z.t+'%;width:'+z.w+'%;height:'+z.h+'%"></div>';
-  }).join('');
-  return '<div class="ref-icon-img-wrap"><img src="'+imgSrc+'" style="width:100%;display:block">'+zHtml+'</div>';
-}
+/* 渲染编辑弹窗内分类网格（独立圆底图标，匹配参考图一布局） */
 function renderBeCats(){
   var expEl=$('beCatExp'), incEl=$('beCatInc');
-  expEl.innerHTML='<div class="be-sec-title">支出"></div>'+renderBeImg(CLICK_ZONES_EXP, REF_EXP);
-  incEl.innerHTML='<div class="be-sec-title">收入"></div>'+renderBeImg(CLICK_ZONES_INC, REF_INC);
+  /* 支出区 */
+  var expCells = EXP_CATS.map(function(c){
+    var sel=(beState && beState.cat===c.k)?' sel':'';
+    var ico = CAT_ICON_PNG[c.k] || '';
+    return '<div class="be-cell'+sel+'" data-k="'+c.k+'" data-n="'+c.n+'">'+
+      '<div class="be-circle"><img src="'+ico+'" style="width:100%;height:100%;object-fit:contain;display:block;border-radius:50%;"></div>'+
+      '<div class="be-catlabel">'+c.n+'</div></div>';
+  }).join('');
+  /* 收入区（间距更紧凑） */
+  var incCells = INC_CATS.map(function(c){
+    var sel=(beState && beState.cat===c.k)?' sel':'';
+    var ico = CAT_ICON_PNG[c.k] || '';
+    return '<div class="be-cell'+sel+'" data-k="'+c.k+'" data-n="'+c.n+'">'+
+      '<div class="be-circle"><img src="'+ico+'" style="width:100%;height:100%;object-fit:contain;display:block;border-radius:50%;"></div>'+
+      '<div class="be-catlabel">'+c.n+'</div></div>';
+  }).join('');
+  expEl.innerHTML='<div class="be-sec-title">支出</div><div class="be-grid">'+expCells+'</div>';
+  incEl.innerHTML='<div class="be-sec-title" style="padding-top:4px;">收入</div><div class="be-grid">'+incCells+'</div>';
+  /* 绑定点击 */
   [expEl,incEl].forEach(function(sec){
-    sec.querySelectorAll('.ref-click-zone').forEach(function(zone){
-      zone.addEventListener('click', function(){
+    sec.querySelectorAll('.be-cell').forEach(function(cell){
+      cell.addEventListener('click', function(){
         onBeCatPick(this.getAttribute('data-k'), this.getAttribute('data-n'));
       });
     });
