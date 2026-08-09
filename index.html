@@ -282,17 +282,17 @@
 
   /* 分区：支出 / 收入（左上角标题 + 4 列图标） */
 
-  .cat-section{padding:18px 4px 6px;box-sizing:border-box;}
+  .cat-section{padding:8px 0 4px;box-sizing:border-box;}
 
-  .cat-sec-title{font-size:16px;font-weight:600;color:#333;text-align:left;
+  .cat-sec-title{font-size:15px;font-weight:600;color:#333;text-align:left;
 
-    padding:0 6px 18px;}
+    padding:0 4px 10px;display:none;}
 
 
 
   /* 4 列圆圈图标网格（使用真实截图图标） */
 
-  .cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:26px 0;box-sizing:border-box;}
+  .cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px 0;box-sizing:border-box;}
 
   .cat-cell{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;
 
@@ -311,10 +311,10 @@
   .cat-label{font-size:13px;color:#888;font-weight:400;white-space:nowrap;}
 
   /* 参考图原图 + 点击覆盖层 */
-  .ref-icon-img-wrap{position:relative;width:100%;}
+  .ref-icon-img-wrap{position:relative;width:100%;grid-column:1/-1;overflow:visible;}
   .ref-click-zone{position:absolute;cursor:pointer;z-index:10;box-sizing:border-box;}
   .ref-click-zone:active{background:rgba(115,169,104,0.15);border-radius:8px;}
-  .ref-sheet-wrap{max-width:320px;margin:0 auto;}
+  .ref-sheet-wrap{max-width:360px;margin:0 auto;overflow:visible;}
 
   /* 生活费：线条房子图标（对齐截图：房子形状） */
 
@@ -626,7 +626,7 @@
 
   .be-title{font-size:15px;font-weight:600;color:var(--bean-deep);text-align:center;margin:2px 0 8px;}
 
-  .be-sec-title{font-size:13px;font-weight:600;color:rgba(31,60,35,.72);padding:6px 12px 4px;}
+  .be-sec-title{font-size:13px;font-weight:600;color:rgba(31,60,35,.72);padding:6px 12px 4px;display:none;}
 
   .be-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 0;}
 
