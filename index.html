@@ -678,12 +678,12 @@ function renderFlow(){
     var di=arr.filter(function(r){return r.type==='inc'}).reduce(function(s,r){return s+r.amount;},0);
     var de=arr.filter(function(r){return r.type==='exp'}).reduce(function(s,r){return s+r.amount;},0);
     /* 小计逻辑：仅收入→收入小计，仅支出→支出小计，两者都有→都显示 */
-    /* 收入数据移至「结余」列下方显示（由 postRenderAlignIncome 定位），此处仅生成带标记的 span */
+    /* 收入数据移至「结余」列下方显示（由 alignIncomeToBalance 定位），始终显示（含0） */
     var dayRight='';
-    var incHtml = '';
-    if(di>0 && de===0) { incHtml='<span class="r-inc" data-inc="'+di+'"><span class="r-inc-label">收入: </span><b class="i">'+money(di)+'</b></span>'; dayRight='<span class="r-exp"></span>'; }
-    else if(de>0 && di===0) { incHtml='<span class="r-inc" data-inc="0"></span>'; dayRight='<span class="r-exp"><span class="r-exp-label">支出: </span><b class="e">'+money(de)+'</b></span>'; }
-    else { incHtml='<span class="r-inc" data-inc="'+di+'"><span class="r-inc-label">收入: </span><b class="i">'+money(di)+'</b></span>'; dayRight='<span class="r-exp"><span class="r-exp-label">支出: </span><b class="e">'+money(de)+'</b></span>'; }
+    var incHtml = '<span class="r-inc" data-inc="'+di+'"><span class="r-inc-label">小计收入: </span><b class="i">'+money(di)+'</b></span>';
+    if(di>0 && de===0) { dayRight='<span class="r-exp"></span>'; }
+    else if(de>0 && di===0) { dayRight='<span class="r-exp"><span class="r-exp-label">支出: </span><b class="e">'+money(de)+'</b></span>'; }
+    else { dayRight='<span class="r-exp"><span class="r-exp-label">支出: </span><b class="e">'+money(de)+'</b></span>'; }
     html+='<div class="ph-day"><div class="ph-day-l">'+m+'月'+d+'日<small>星期'+week(y,m,d)+'</small></div>'
         +'<div class="ph-day-r">'+dayRight+incHtml+'</div></div>';
     arr.sort(function(a,b){return(b.time||'').localeCompare(a.time||'');}).forEach(function(r){
@@ -722,7 +722,7 @@ function renderFlow(){
     });
   })();
 
-  // 小计收入定位到「结余」列下方（对齐结余值左侧）
+  // 小计收入定位到「结余」列下方（对齐结余值左侧，始终显示含0）
   (function alignIncomeToBalance(){
     var balVal = document.getElementById('phBal'); /* 结余数值 */
     if(!balVal) return;
@@ -731,9 +731,6 @@ function renderFlow(){
       dr.style.position = 'relative'; /* 为绝对定位子元素提供参照 */
       var incEl = dr.querySelector('.r-inc[data-inc]');
       if(!incEl) return;
-      var incVal = incEl.getAttribute('data-inc');
-      /* 无收入数据时隐藏 */
-      if(incVal === '0' || incVal === '0.00' || +incVal === 0){ incEl.style.display='none'; return; }
       var Ldr = dr.getBoundingClientRect().left;
       incEl.style.left = (Lbal - Ldr) + 'px';   /* 左边界对齐结余值 */
       incEl.style.top = '50%';
