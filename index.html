@@ -1366,25 +1366,15 @@ function renderFlow(){
 
       var sign=(r.type==='exp'&&r.amount>0)?'−':'';
 
-      /* 列表图标：餐饮用 <img> 直接贴截图裁剪的 PNG；其余用 CAT_PNG 背景 */
+      /* 列表图标：统一使用 SVG 线性图标 */
 
-      var icoHtml = '';
+      var icoSvg = CAT_SVG[r.cat] || '';
 
-      if(r.cat === 'food'){
-
-        icoHtml = '<img src="'+LIST_FOOD_PNG+'" style="width:100%;height:100%;object-fit:contain;display:block;" alt="餐饮">';
-
-      } else {
-
-        icoHtml = '';
-
-        var icoStyle = CAT_PNG[r.cat] ? ' style="background-image:url('+CAT_PNG[r.cat]+')"' : '';
-
-      }
+      var icoHtml = icoSvg;
 
       html+='<div class="ph-row" data-id="'+r.id+'" data-type="'+r.type+'" data-cat="'+r.cat+'" data-remark="'+(r.remark||'')+'">'
 
-          +'<span class="ph-ico'+(icoStyle||'')+'">'+icoHtml+'</span>'
+          +'<span class="ph-ico">'+icoHtml+'</span>'
 
           +'<div class="ph-row-mid"><div class="ph-row-note">'+(r.remark||'')+'</div>'
 
@@ -1494,7 +1484,43 @@ var CAT_PNG = {
 
 
 
-/* ===== 渲染分类网格（base64 内嵌图标） ===== */
+/* ===== 12 个统一线性描边分类图标（匹配例图风格：白底、浅黑线条、圆角底衬） ===== */
+
+var CAT_SVG = {
+
+  /* ---- 支出分类 ---- */
+
+  food: '<svg viewBox="0 0 24 24"><ellipse cx="8" cy="7" rx="2.5" ry="4" fill="none"/><path d="M8 11v10M5.5 7c0-2.2 1.1-4 2.5-4s2.5 1.8 2.5 4" fill="none"/><path d="M16 3v5M16 8c0 1.7 1.3 3 3 3s3-1.3 3-3V3M16 3h6M19 3v8" fill="none"/></svg>',
+
+  fruit: '<svg viewBox="0 0 24 24"><circle cx="7" cy="16" r="3" fill="none"/><circle cx="17" cy="16" r="3" fill="none"/><path d="M7 16l3-6h4l3 6M14 10l2-4h3M14 10V7" fill="none"/></svg>',
+
+  daily: '<svg viewBox="0 0 24 24"><rect x="6" y="3" width="12" height="17" rx="2" fill="none"/><path d="M6 16c1.5.5 3.5.5 6 0s4.5-.5 6 0M10 3v3M14 3v3" fill="none"/></svg>',
+
+  transport: '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2" fill="none"/><path d="M3 10h18M7 18v2M17 18v2M7 18a1.5 1.5 0 100 3 1.5 1.5 0 000-3zM17 18a1.5 1.5 0 100 3 1.5 1.5 0 000-3zM6 10V7h3v3M13 7h3v3" fill="none"/></svg>',
+
+  shop: '<svg viewBox="0 0 24 24"><path d="M6 3L4 7v12a2 2 0 002 2h12a2 2 0 002-2V7l-2-4z" fill="none"/><path d="M4 7h16M10 10v6M14 10v6" fill="none"/><path d="M9 3c0 1.5-1 3-3 3M15 3c0 1.5 1 3 3 3" fill="none"/></svg>',
+
+  cloth: '<svg viewBox="0 0 24 24"><path d="M20.38 3.46L15 6l-3-2-3 2-5.38-2.54A2 2 0 002 4.3V20a2 2 0 002 2h16a2 2 0 002-2V4.3a2 2 0 00-1.62-1.84z" fill="none"/><path d="M12 4v16M8 10h8" fill="none"/></svg>',
+
+  comms: '<svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6A19.79 19.79 0 012.06 4.27 2 2 0 014.05 2h3a2 2 0 012 1.72c.13.96.36 1.91.7 2.82a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.9.34 1.86.57 2.82.7A2 2 0 0122 16.92z" fill="none"/><path d="M18 3v2M18 8v1M21 5h-2M17 5h-1" fill="none"/></svg>',
+
+  gp: '<svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="12" rx="3" fill="none"/><path d="M9 11v2h-2M9 13h2M16 11h.01M19 11h.01M17.5 13.5h.01" fill="none"/></svg>',
+
+  /* ---- 收入分类 ---- */
+
+  salary: '<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" fill="none"/><path d="M9 9h6M12 9v6M9 15h6" fill="none"/><path d="M10 11l2-2 2 2M10 13l2 2 2-2" fill="none"/></svg>',
+
+  living: '<svg viewBox="0 0 24 24"><path d="M3 10l9-7 9 7v10a2 2 0 01-2 2H5a2 2 0 01-2-2z" fill="none"/><path d="M9 21v-6h6v6" fill="none"/></svg>',
+
+  redpacket: '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2" fill="none"/><path d="M3 12l9-4 9 4M12 12v7" fill="none"/></svg>',
+
+  finance: '<svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18" fill="none"/><polyline points="17 6 23 6 23 12" fill="none"/><path d="M3 20h18" fill="none"/></svg>'
+
+};
+
+
+
+/* ===== 渲染分类网格（统一使用 SVG 线性图标） ===== */
 
 function renderCatGrid(el, list, selectedKey){
 
@@ -1502,35 +1528,11 @@ function renderCatGrid(el, list, selectedKey){
 
     var hl = (c.k === selectedKey) ? ' cat-circle-sel' : '';
 
-    /* 生活费：与其它分类一致，用 CAT_PNG 裁切 PNG */
-
-    if(c.k === 'living'){
-
-      return '<div class="cat-cell" data-k="'+c.k+'" data-n="'+c.n+'">'
-
-           +'<div class="cat-circle'+hl+'"><img src="'+CAT_PNG.living+'" style="width:60%;height:60%;object-fit:contain;display:block;"></div>'
-
-           +'<div class="cat-label">'+c.n+'</div></div>';
-
-    }
-
-    /* 餐饮：与列表条目一致，用截图裁剪的透明底勺叉 PNG（灰底由 .cat-circle 透出） */
-
-    if(c.k === 'food'){
-
-      return '<div class="cat-cell" data-k="'+c.k+'" data-n="'+c.n+'">'
-
-           +'<div class="cat-circle'+hl+'" style="background-image:url('+LIST_FOOD_PNG+')"></div>'
-
-           +'<div class="cat-label">'+c.n+'</div></div>';
-
-    }
-
-    var src = CAT_PNG[c.k] || '';
+    var svg = CAT_SVG[c.k] || '';
 
     return '<div class="cat-cell" data-k="'+c.k+'" data-n="'+c.n+'">'
 
-         +'<div class="cat-circle'+hl+'" style="background-image:url('+src+')"></div>'
+         +'<div class="cat-circle'+hl+' cat-circle-line">'+svg+'</div>'
 
          +'<div class="cat-label">'+c.n+'</div></div>';
 
@@ -2030,13 +2032,9 @@ function closeCatSheet(){ $('catSheetMask').classList.remove('show'); catSheetRe
 
 function catSheetCellHTML(it){
 
-  var inner;
+  var svg = CAT_SVG[it.k] || '';
 
-  if(it.food){ inner='<div class="catSheet-circle"><img src="'+LIST_FOOD_PNG+'" style="width:60%;height:60%;object-fit:contain;"></div>'; }
-
-  else if(it.line){ inner='<div class="catSheet-circle"><img src="'+CAT_PNG.living+'" style="width:60%;height:60%;object-fit:contain;display:block;"></div>'; }
-
-  else { inner='<div class="catSheet-circle"><img src="'+it.src+'" style="width:60%;height:60%;object-fit:contain;display:block;"></div>'; }
+  var inner = '<div class="catSheet-circle cat-line">'+svg+'</div>';
 
   return '<div class="catSheet-cell" data-k="'+it.k+'">'+inner+'<div class="catSheet-label">'+it.n+'</div></div>';
 
@@ -2050,21 +2048,21 @@ function renderCatSheet(){
 
   var expItems=[
 
-    {k:'food',n:'餐饮',food:true},
+    {k:'food',n:'餐饮'},
 
-    {k:'fruit',n:'水果',src:CAT_PNG.fruit},
+    {k:'fruit',n:'水果'},
 
-    {k:'daily',n:'日用',src:CAT_PNG.daily},
+    {k:'daily',n:'日用'},
 
-    {k:'transport',n:'交通',src:CAT_PNG.transport},
+    {k:'transport',n:'交通'},
 
-    {k:'shop',n:'购物',src:CAT_PNG.shop},
+    {k:'shop',n:'购物'},
 
-    {k:'cloth',n:'服饰',src:CAT_PNG.cloth},
+    {k:'cloth',n:'服饰'},
 
-    {k:'comms',n:'话费',src:CAT_PNG.comms},
+    {k:'comms',n:'话费'},
 
-    {k:'gp',n:'自定义',src:CAT_PNG.gp}
+    {k:'gp',n:'自定义'}
 
   ];
 
@@ -2072,13 +2070,13 @@ function renderCatSheet(){
 
   var incItems=[
 
-    {k:'salary',n:'工资',src:CAT_PNG.salary},
+    {k:'salary',n:'工资'},
 
-    {k:'living',n:'生活费',src:CAT_PNG.living},
+    {k:'living',n:'生活费'},
 
-    {k:'redpacket',n:'红包',src:CAT_PNG.redpacket},
+    {k:'redpacket',n:'红包'},
 
-    {k:'finance',n:'理财',src:CAT_PNG.finance}
+    {k:'finance',n:'理财'}
 
   ];
 
@@ -2310,7 +2308,7 @@ function findRec(id){
 
 
 
-/* 渲染弹窗内分类网格（与列表一致：餐饮用截图 PNG，居住用线条房子） */
+/* 渲染弹窗内分类网格（统一使用 SVG 线性图标） */
 
 function beGridHTML(list){
 
@@ -2318,23 +2316,11 @@ function beGridHTML(list){
 
     var sel=(beState && beState.cat===c.k)?' sel':'';
 
-    var inner, label=(c.k==='gp')?'游戏':c.n;
+    var label=(c.k==='gp')?'游戏':c.n;
 
-    if(c.k==='food'){
+    var svg = CAT_SVG[c.k] || '';
 
-      inner='<div class="be-circle" style="background-image:url('+LIST_FOOD_PNG+')"></div>';
-
-    } else if(c.k==='living'){
-
-      inner='<div class="be-circle"><img src="'+CAT_PNG.living+'" style="width:60%;height:60%;object-fit:contain;display:block;"></div>';
-
-    } else {
-
-      var src=CAT_PNG[c.k]||'';
-
-      inner='<div class="be-circle"><img src="'+src+'" style="width:60%;height:60%;object-fit:contain;display:block;"></div>';
-
-    }
+    var inner = '<div class="be-circle">'+svg+'</div>';
 
     return '<div class="be-cell'+sel+'" data-k="'+c.k+'" data-n="'+label+'">'+inner+'<div class="be-catlabel">'+label+'</div></div>';
 
