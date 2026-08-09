@@ -529,6 +529,10 @@
 
   .catSheet-cell:active{background:#f5f5f5;}
 
+  .catSheet-cell.sel{background:#e8f0e3;}
+
+  .catSheet-cell.sel .catSheet-circle{background:#dce8d4;}
+
   .catSheet-circle{width:52px;height:52px;border-radius:50%;background:#f5f5f5;
 
     display:flex;align-items:center;justify-content:center;}
@@ -686,6 +690,45 @@
   .be-save:active{background:#92b869;}
 
 
+  /* ========== 整页分类下的记账编辑区（cat-edit） ========== */
+
+  .cat-edit{flex:0 0 auto;border-top:1px solid rgba(31,60,35,.10);padding:10px 14px 12px;background:#fafcfa;display:flex;flex-direction:column;gap:6px;}
+
+  .cat-edit-amt-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0;}
+
+  .cat-edit-amt{font-size:30px;font-weight:600;color:#2c3e2e;font-variant-numeric:tabular-nums;}
+
+  .cat-edit-amt.empty{color:#b6c2b6;}
+
+  .cat-edit-date-btn{font-size:16px;color:#3E634B;font-weight:600;background:none;border:none;cursor:pointer;font-variant-numeric:tabular-nums;padding:6px 8px;border-radius:8px;-webkit-tap-highlight-color:transparent;}
+
+  .cat-edit-date-btn:active{background:rgba(162,197,121,.20);}
+
+  .cat-edit-rmk{border:none;outline:none;font-size:14px;color:#3E634B;background:#f3f6ec;border-radius:8px;padding:8px 10px;box-sizing:border-box;width:100%;}
+
+  .cat-edit-rmk::placeholder{color:#a9b6a9;}
+
+  .cat-edit-kp{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:4px;}
+
+  .cat-edit-key{display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:500;color:#2c3e2e;background:#f3f6ec;border:none;border-radius:12px;cursor:pointer;-webkit-tap-highlight-color:transparent;font-variant-numeric:tabular-nums;transition:background .1s;padding:12px 0;}
+
+  .cat-edit-key:active{background:#e3e9d8;}
+
+  .cat-edit-del{color:#8a9a8a;font-size:20px;}
+
+  .cat-edit-foot{display:flex;height:48px;flex-shrink:0;border-top:1px solid rgba(31,60,35,.08);margin-top:4px;}
+
+  .cat-edit-foot button{flex:1;border:none;font-size:16px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+
+  .cat-edit-cancel{background:#eef2e6;color:#5a7a5e;}
+
+  .cat-edit-save{background:var(--bean);color:#10331a;}
+
+  .cat-edit-cancel:active{background:#e3e9d8;}
+
+  .cat-edit-save:active{background:#92b869;}
+
+
 
   /* 日期滚轮需盖在编辑弹窗之上 */
 
@@ -840,6 +883,26 @@
 
       <div class="cat-grid" id="catGridInc"></div>
 
+    </div>
+
+    <!-- 记账编辑区：金额 + 备注 + 键盘 -->
+    <div class="cat-edit" id="catEdit">
+      <div class="cat-edit-amt-row">
+        <span class="cat-edit-amt" id="catAmtDisplay">0.00</span>
+        <button class="cat-edit-date-btn" id="catDateBtn">2026/08/10</button>
+      </div>
+      <input class="cat-edit-rmk" id="catRemark" type="text" placeholder="备注（选填）">
+      <div class="cat-edit-kp" id="catKeypad">
+        <button class="cat-edit-key" data-k="7">7</button><button class="cat-edit-key" data-k="8">8</button><button class="cat-edit-key" data-k="9">9</button>
+        <button class="cat-edit-key" data-k="4">4</button><button class="cat-edit-key" data-k="5">5</button><button class="cat-edit-key" data-k="6">6</button>
+        <button class="cat-edit-key" data-k="1">1</button><button class="cat-edit-key" data-k="2">2</button><button class="cat-edit-key" data-k="3">3</button>
+        <button class="cat-edit-key" data-k=".">.</button><button class="cat-edit-key" data-k="0">0</button><button class="cat-edit-key cat-edit-del" data-k="del">⌫</button>
+      </div>
+      <div class="cat-edit-foot">
+        <button class="cat-edit-cancel" id="catEditCancel">取消</button>
+        <button class="cat-edit-save" id="catEditSave">保存</button>
+      </div>
+      <input id="catAmount" type="hidden">
     </div>
 
   </div>
@@ -1586,7 +1649,7 @@ function openCatFullPage(recId){
   /* 支出区：独立圆底图标网格（与半页弹窗一致，保证文字标签可见） */
   var expCells = EXP_CATS.map(function(c){
     var ico = CAT_ICON_PNG[c.k] || '';
-    return '<div class="catSheet-cell cat-cell" data-k="'+c.k+'" data-n="'+c.n+'" data-type="exp">'+
+    return '<div class="catSheet-cell" data-k="'+c.k+'" data-n="'+c.n+'" data-type="exp">'+
       '<div class="catSheet-circle"><img src="'+ico+'" style="width:100%;height:100%;object-fit:contain;display:block;border-radius:50%;"></div>'+
       '<div class="catSheet-label">'+c.n+'</div></div>';
   }).join('');
@@ -1595,16 +1658,52 @@ function openCatFullPage(recId){
   /* 收入区：独立圆底图标网格（文字标签明确显示） */
   var incCells = INC_CATS.map(function(c){
     var ico = CAT_ICON_PNG[c.k] || '';
-    return '<div class="catSheet-cell cat-cell" data-k="'+c.k+'" data-n="'+c.n+'" data-type="inc">'+
+    return '<div class="catSheet-cell" data-k="'+c.k+'" data-n="'+c.n+'" data-type="inc">'+
       '<div class="catSheet-circle"><img src="'+ico+'" style="width:100%;height:100%;object-fit:contain;display:block;border-radius:50%;"></div>'+
       '<div class="catSheet-label">'+c.n+'</div></div>';
   }).join('');
   $('catGridInc').innerHTML = '<div class="catSheet-grid">'+incCells+'</div>';
 
-  $('catTopTitle').textContent = catPickerCtx.recId ? '修改分类' : '选择分类';
+  $('catTopTitle').textContent = catPickerCtx.recId ? '记账' : '记账';
+
+  /* 初始化编辑区状态 */
+  catPickerCtx.cat = null;
+  catPickerCtx.type = 'exp';
+  catPickerCtx.amtStr = '';
+  catEditUpdateDisplay();
+
+  /* 设置日期按钮为今天 */
+  var td = new Date();
+  $('catDateBtn').textContent = td.getFullYear()+'/'+pad(td.getMonth()+1)+'/'+pad(td.getDate());
+  catPickerCtx.date = {y:td.getFullYear(), m:td.getMonth()+1, d:td.getDate()};
 
   $('catMask').classList.add('show');
 
+}
+
+
+/* 整页编辑区：金额显示更新 */
+function catEditUpdateDisplay(){
+  var display = $('catAmtDisplay');
+  if(!display) return;
+  var s = catPickerCtx.amtStr || '';
+  display.textContent = s ? (s.indexOf('.')===0?'0'+s:s) : '0.00';
+  display.classList.toggle('empty', !s);
+  $('catAmount').value = s ? parseFloat(s).toFixed(2) : '';
+}
+
+/* 整页编辑区：数字键盘按键处理 */
+function catEditKeyPress(key){
+  if(key === 'del'){
+    catPickerCtx.amtStr = catPickerCtx.amtStr.slice(0,-1);
+  } else {
+    if(catPickerCtx.amtStr.replace('.').length >= 10) return;
+    if(key === '.' && catPickerCtx.amtStr.includes('.')) return;
+    if(key === '.' && !catPickerCtx.amtStr) { catPickerCtx.amtStr = '0.'; }
+    else if(key === '0' && catPickerCtx.amtStr === '0') return;
+    else { catPickerCtx.amtStr += key; }
+  }
+  catEditUpdateDisplay();
 }
 
 
@@ -1619,7 +1718,7 @@ $('catClose').addEventListener('click', function(){
 
 
 
-/* 点击分类 → 打开金额输入弹窗 */
+/* 点击分类 → 全页内选中分类（不再跳转弹窗） */
 
 function bindCatClick(el){
 
@@ -1639,23 +1738,11 @@ function bindCatClick(el){
 
     for(var i=0;i<INC_CATS.length;i++){ if(INC_CATS[i].k===k){ type='inc'; break; } }
 
-    $('catMask').classList.remove('show');
-
-    if(catPickerCtx.recId){
-
-      /* 编辑已有条目：写入分类后打开该条目编辑弹窗（金额/备注/日期） */
-
-      var rec = findRec(catPickerCtx.recId);
-
-      if(rec){ rec.cat=k; rec.type=type; renderFlow(); renderHeader(); }
-
-      openAmtForRecord(catPickerCtx.recId);
-
-    } else {
-
-      openAmtModal(type, k, n);
-
-    }
+    /* 高亮选中：先清除旧选中 */
+    el.querySelectorAll('.catSheet-cell.sel').forEach(function(c){ c.classList.remove('sel'); });
+    cell.classList.add('sel');
+    catPickerCtx.cat = k;
+    catPickerCtx.type = type;
 
   });
 
@@ -2471,6 +2558,53 @@ $('beDateBtn').addEventListener('click', function(e){
 /* 内置数字键盘：点击驱动金额输入（隐藏的 #beAmount 作为数据载体，beSave 仍读其 value） */
 $('beKeypad').querySelectorAll('.be-key').forEach(function(btn){
   btn.addEventListener('click', function(){ beKeyPress(this.getAttribute('data-k')); });
+});
+
+/* ========== 整页分类编辑区事件绑定 ========== */
+
+/* 数字键盘 */
+$('catKeypad').querySelectorAll('.cat-edit-key').forEach(function(btn){
+  btn.addEventListener('click', function(){ catEditKeyPress(this.getAttribute('data-k')); });
+});
+
+/* 日期按钮 */
+$('catDateBtn').addEventListener('click', function(e){
+  e.stopPropagation();
+  openDatePicker(new Date(catPickerCtx.date.y, catPickerCtx.date.m-1, catPickerCtx.date.d), function(d){
+    catPickerCtx.date = {y:d.getFullYear(), m:d.getMonth()+1, d:d.getDate()};
+    $('catDateBtn').textContent = d.getFullYear()+'/'+pad(d.getMonth()+1)+'/'+pad(d.getDate());
+  });
+});
+
+/* 取消：关闭整页 */
+$('catEditCancel').addEventListener('click', function(){
+  $('catMask').classList.remove('show');
+});
+
+/* 保存 */
+$('catEditSave').addEventListener('click', function(){
+  if(!catPickerCtx.cat){ showToast('请先选择分类'); return; }
+  var amtVal = parseFloat($('catAmount').value);
+  if(!amtVal || amtVal <= 0){ showToast('请输入金额'); return; }
+  var rec = {
+    id: catPickerCtx.recId || ('r_'+Date.now()),
+    type: catPickerCtx.type,
+    cat: catPickerCtx.cat,
+    amount: amtVal,
+    remark: $('catRemark').value.trim(),
+    date: catPickerCtx.date
+  };
+  if(catPickerCtx.recId){
+    var idx = recs.findIndex(function(r){ return r.id === catPickerCtx.recId; });
+    if(idx >= 0) { recs[idx] = rec; }
+  } else {
+    recs.unshift(rec);
+  }
+  saveRecs();
+  renderFlow();
+  renderHeader();
+  $('catMask').classList.remove('show');
+  showToast('已保存');
 });
 
 </script>
