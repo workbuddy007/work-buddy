@@ -96,6 +96,9 @@
 
   .ph-stat{display:flex;flex-direction:column;align-items:center;justify-content:center;}
 
+  /* 顶部「收入」统计整体右移 0.8mm */
+  .ph-stats .ph-stat:first-child{transform:translateX(0.8mm);}
+
   .ph-stat-label{font-size:12px;color:rgba(31,60,35,.82);margin-bottom:3px;font-weight:500;}
 
   .ph-stat-val{font-size:22px;font-weight:700;color:var(--bean-deep);line-height:1;font-variant-numeric:tabular-nums;}
@@ -1358,9 +1361,9 @@ function renderFlow(){
 
     /* 小计逻辑：仅收入→收入小计，仅支出→支出小计，两者都有→都显示 */
     var dayRight='';
-    if(di>0 && de===0) dayRight='<span class="r-inc"><span class="r-inc-label">小计收入: </span><b class="i">'+money(di)+'</b></span><span class="r-exp"></span>';
+    if(di>0 && de===0) dayRight='<span class="r-inc"><span class="r-inc-label">收入: </span><b class="i">'+money(di)+'</b></span><span class="r-exp"></span>';
     else if(de>0 && di===0) dayRight='<span class="r-inc"></span><span class="r-exp"><span class="r-exp-label">支出: </span><b class="e">'+money(de)+'</b></span>';
-    else dayRight='<span class="r-inc"><span class="r-inc-label">小计收入: </span><b class="i">'+money(di)+'</b></span><span class="r-exp"><span class="r-exp-label">支出: </span><b class="e">'+money(de)+'</b></span>';
+    else dayRight='<span class="r-inc"><span class="r-inc-label">收入: </span><b class="i">'+money(di)+'</b></span><span class="r-exp"><span class="r-exp-label">支出: </span><b class="e">'+money(de)+'</b></span>';
 
     html+='<div class="ph-day"><div class="ph-day-l">'+m+'月'+d+'日<small>星期'+week(y,m,d)+'</small></div>'
 
