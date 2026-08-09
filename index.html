@@ -131,12 +131,12 @@
 
   .ph-day-l small{font-size:14px;font-weight:400;color:#6a8a72;margin-left:5px;}
 
-  .ph-day-r{font-size:12px;color:#6a8a72;display:flex;justify-content:flex-end;gap:2px;position:relative;}
+  .ph-day-r{font-size:12px;color:#6a8a72;display:flex;justify-content:flex-end;gap:10px;position:relative;}
 
   .ph-day-r b{font-weight:400;}
 
-  /* 收入:0 紧贴支出:0（按图二红圈箭头指示右移） */
-  .ph-day-r .r-inc{width:auto;text-align:right;flex:0 0 auto;white-space:nowrap;margin-left:2px;}
+  /* 收入:0 与支出:0 之间留可见空隙，收入整体略向左退 */
+  .ph-day-r .r-inc{width:auto;text-align:right;flex:0 0 auto;white-space:nowrap;margin-left:0;}
   .ph-day-r .r-exp{width:auto;text-align:right;flex:0 0 auto;white-space:nowrap;}
   .ph-day-r .i,.ph-day-r .e{color:var(--ink-mid);}
 
@@ -686,24 +686,24 @@
   .dp-mask{z-index:140;}
 
 
-  /* ========== 响应式布局（手机 / 平板 / 桌面） ========== */
+  /* ========== 响应式布局：电脑端优先适配 ========== */
 
-  /* 平板及更大屏幕：主容器居中限宽，模拟手机视口 */
+  /* 平板及以上：主应用以居中卡片呈现，避免桌面被挤成窄条；弹窗（半页/编辑）同步限宽居中 */
   @media (min-width: 481px){
-    body{background:#c8dcc8;display:flex;align-items:center;justify-content:center;}
-    .ph-wrap{max-width:480px;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.12);height:auto;min-height:100vh;}
-    .catSheet{max-width:480px;left:50%;transform:translateX(-50%);border-radius:16px 16px 0 0;}
-    .be-wrap{max-width:480px;}
+    body{background:linear-gradient(135deg,#d9e9d4,#c2d7c7);display:flex;align-items:center;justify-content:center;}
+    .ph-wrap{max-width:560px;width:100%;height:100vh;box-shadow:0 6px 30px rgba(0,0,0,.12);}
+    .catSheet{left:50%;right:auto;transform:translateX(-50%);max-width:560px;border-radius:16px 16px 0 0;}
+    .be-sheet{left:50%;right:auto;transform:translateX(-50%);max-width:560px;border-radius:16px 16px 0 0;}
   }
 
-  /* 桌面端：更窄的容器 + 更精致的阴影 */
+  /* 桌面端：更宽的主卡片（720px），弹窗同步限宽居中，半页分类弹窗不显示滑动把手 */
   @media (min-width: 768px){
-    .ph-wrap{max-width:420px;box-shadow:0 8px 40px rgba(0,0,0,.15);}
-    .catSheet{max-width:420px;}
-    .be-wrap{max-width:420px;}
+    .ph-wrap{max-width:720px;box-shadow:0 12px 50px rgba(0,0,0,.18);}
+    .catSheet{max-width:720px;}
+    .be-sheet{max-width:720px;}
   }
 
-  /* 小屏手机：保持原有全宽布局（无需额外规则） */
+  /* 手机端（≤480px）：保持原有全宽布局（无需额外规则） */
 
 </style>
 
