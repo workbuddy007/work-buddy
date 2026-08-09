@@ -283,7 +283,7 @@
 
   .cat-sec-title{font-size:15px;font-weight:600;color:#333;text-align:left;
 
-    padding:0 4px 10px;display:none;}
+    padding:0 4px 10px;display:block;}
 
 
 
@@ -1583,19 +1583,23 @@ function openCatFullPage(recId){
 
   if(catPickerCtx.recId){ var r = findRec(catPickerCtx.recId); if(r) sel = r.cat; }
 
-  /* 支出区：裁切支出部分（8图标）— 不添加绿色描边，保持与参考图一致 */
-  var expZones = CLICK_ZONES_EXP.map(function(z){
-    var hl = '';
-    return '<div class="ref-click-zone" data-k="'+z.k+'" data-n="'+z.n+'" style="left:'+z.l+'%;top:'+z.t+'%;width:'+z.w+'%;height:'+z.h+'%;'+hl+'"></div>';
+  /* 支出区：独立圆底图标网格（与半页弹窗一致，保证文字标签可见） */
+  var expCells = EXP_CATS.map(function(c){
+    var ico = CAT_ICON_PNG[c.k] || '';
+    return '<div class="catSheet-cell cat-cell" data-k="'+c.k+'" data-n="'+c.n+'" data-type="exp">'+
+      '<div class="catSheet-circle"><img src="'+ico+'" style="width:100%;height:100%;object-fit:contain;display:block;border-radius:50%;"></div>'+
+      '<div class="catSheet-label">'+c.n+'</div></div>';
   }).join('');
-  $('catGridExp').innerHTML = '<div class="ref-icon-img-wrap"><img src="'+REF_EXP+'" style="width:100%;display:block">'+expZones+'</div>';
+  $('catGridExp').innerHTML = '<div class="catSheet-grid">'+expCells+'</div>';
 
-  /* 收入区：裁切收入部分（4图标）— 不添加绿色描边，保持与参考图一致 */
-  var incZones = CLICK_ZONES_INC.map(function(z){
-    var hl = '';
-    return '<div class="ref-click-zone" data-k="'+z.k+'" data-n="'+z.n+'" style="left:'+z.l+'%;top:'+z.t+'%;width:'+z.w+'%;height:'+z.h+'%;'+hl+'"></div>';
+  /* 收入区：独立圆底图标网格（文字标签明确显示） */
+  var incCells = INC_CATS.map(function(c){
+    var ico = CAT_ICON_PNG[c.k] || '';
+    return '<div class="catSheet-cell cat-cell" data-k="'+c.k+'" data-n="'+c.n+'" data-type="inc">'+
+      '<div class="catSheet-circle"><img src="'+ico+'" style="width:100%;height:100%;object-fit:contain;display:block;border-radius:50%;"></div>'+
+      '<div class="catSheet-label">'+c.n+'</div></div>';
   }).join('');
-  $('catGridInc').innerHTML = '<div class="ref-icon-img-wrap"><img src="'+REF_INC+'" style="width:100%;display:block">'+incZones+'</div>';
+  $('catGridInc').innerHTML = '<div class="catSheet-grid">'+incCells+'</div>';
 
   $('catTopTitle').textContent = catPickerCtx.recId ? '修改分类' : '选择分类';
 
@@ -1621,7 +1625,7 @@ function bindCatClick(el){
 
   el.addEventListener('click', function(e){
 
-    var cell=e.target.closest('.cat-cell') || e.target.closest('.ref-click-zone'); if(!cell) return;
+    var cell=e.target.closest('.cat-cell') || e.target.closest('.catSheet-cell') || e.target.closest('.ref-click-zone'); if(!cell) return;
 
     var n=cell.getAttribute('data-n');
 
