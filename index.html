@@ -66,6 +66,9 @@
   .ph-day-r{font-size:12px;color:#6a8a72;display:flex;justify-content:flex-end;gap:4px;}
   .ph-day-r b{font-weight:400;}
   .ph-day-r .r-inc{width:56px;text-align:right;flex:0 0 auto;white-space:nowrap;margin-left:44px;}
+  /* 带data-inc的收入span：脱离flex流，由JS定位到「结余」列下方 */
+  .ph-day-r .r-inc[data-inc]{position:absolute;bottom:0;left:0;width:auto;margin-left:0;font-size:12px;color:#6a8a72;white-space:nowrap;}
+  .ph-day-r .r-inc[data-inc] .i{color:var(--ink-mid);}
   .ph-day-r .r-exp{width:72px;text-align:right;flex:0 0 auto;white-space:nowrap;}
   .ph-day-r .i,.ph-day-r .e{color:var(--ink-mid);}
 
@@ -675,12 +678,14 @@ function renderFlow(){
     var di=arr.filter(function(r){return r.type==='inc'}).reduce(function(s,r){return s+r.amount;},0);
     var de=arr.filter(function(r){return r.type==='exp'}).reduce(function(s,r){return s+r.amount;},0);
     /* 小计逻辑：仅收入→收入小计，仅支出→支出小计，两者都有→都显示 */
+    /* 收入数据移至「结余」列下方显示（由 postRenderAlignIncome 定位），此处仅生成带标记的 span */
     var dayRight='';
-    if(di>0 && de===0) dayRight='<span class="r-inc"><span class="r-inc-label">收入: </span><b class="i">'+money(di)+'</b></span><span class="r-exp"></span>';
-    else if(de>0 && di===0) dayRight='<span class="r-inc"></span><span class="r-exp"><span class="r-exp-label">支出: </span><b class="e">'+money(de)+'</b></span>';
-    else dayRight='<span class="r-inc"><span class="r-inc-label">收入: </span><b class="i">'+money(di)+'</b></span><span class="r-exp"><span class="r-exp-label">支出: </span><b class="e">'+money(de)+'</b></span>';
+    var incHtml = '';
+    if(di>0 && de===0) { incHtml='<span class="r-inc" data-inc="'+di+'"><span class="r-inc-label">收入: </span><b class="i">'+money(di)+'</b></span>'; dayRight='<span class="r-exp"></span>'; }
+    else if(de>0 && di===0) { incHtml='<span class="r-inc" data-inc="0"></span>'; dayRight='<span class="r-exp"><span class="r-exp-label">支出: </span><b class="e">'+money(de)+'</b></span>'; }
+    else { incHtml='<span class="r-inc" data-inc="'+di+'"><span class="r-inc-label">收入: </span><b class="i">'+money(di)+'</b></span>'; dayRight='<span class="r-exp"><span class="r-exp-label">支出: </span><b class="e">'+money(de)+'</b></span>'; }
     html+='<div class="ph-day"><div class="ph-day-l">'+m+'月'+d+'日<small>星期'+week(y,m,d)+'</small></div>'
-        +'<div class="ph-day-r">'+dayRight+'</div></div>';
+        +'<div class="ph-day-r">'+dayRight+incHtml+'</div></div>';
     arr.sort(function(a,b){return(b.time||'').localeCompare(a.time||'');}).forEach(function(r){
       /* 支出金额前加负号，收入不加+号 */
       var sign=(r.type==='exp'&&r.amount>0)?'−':'';
@@ -714,6 +719,25 @@ function renderFlow(){
       t.style.left = (Linc - Lrow) + 'px';   // 时间文字左边界 = 「收入」文字左边界
       t.style.top = '50%';
       t.style.transform = 'translateY(-50%)';
+    });
+  })();
+
+  // 小计收入定位到「结余」列下方（对齐结余值左侧）
+  (function alignIncomeToBalance(){
+    var balVal = document.getElementById('phBal'); /* 结余数值 */
+    if(!balVal) return;
+    var Lbal = balVal.getBoundingClientRect().left; /* 结余值左边界 */
+    body.querySelectorAll('.ph-day-r').forEach(function(dr){
+      dr.style.position = 'relative'; /* 为绝对定位子元素提供参照 */
+      var incEl = dr.querySelector('.r-inc[data-inc]');
+      if(!incEl) return;
+      var incVal = incEl.getAttribute('data-inc');
+      /* 无收入数据时隐藏 */
+      if(incVal === '0' || incVal === '0.00' || +incVal === 0){ incEl.style.display='none'; return; }
+      var Ldr = dr.getBoundingClientRect().left;
+      incEl.style.left = (Lbal - Ldr) + 'px';   /* 左边界对齐结余值 */
+      incEl.style.top = '50%';
+      incEl.style.transform = 'translateY(-50%)';
     });
   })();
 
@@ -756,10 +780,10 @@ var CAT_PNG = {
 function renderCatGrid(el, list, selectedKey){
   el.innerHTML=list.map(function(c){
     var hl = (c.k === selectedKey) ? ' cat-circle-sel' : '';
-    /* 生活费：线条房子图标 */
+    /* 生活费：与其它分类一致，用 CAT_PNG 裁切 PNG */
     if(c.k === 'living'){
       return '<div class="cat-cell" data-k="'+c.k+'" data-n="'+c.n+'">'
-           +'<div class="cat-circle cat-circle-line'+hl+'">'+CAT_ICONS.living+'</div>'
+           +'<div class="cat-circle'+hl+'"><img src="'+CAT_PNG.living+'" style="width:60%;height:60%;object-fit:contain;display:block;"></div>'
            +'<div class="cat-label">'+c.n+'</div></div>';
     }
     /* 餐饮：与列表条目一致，用截图裁剪的透明底勺叉 PNG（灰底由 .cat-circle 透出） */
@@ -1022,7 +1046,7 @@ function closeCatSheet(){ $('catSheetMask').classList.remove('show'); catSheetRe
 function catSheetCellHTML(it){
   var inner;
   if(it.food){ inner='<div class="catSheet-circle"><img src="'+LIST_FOOD_PNG+'" style="width:60%;height:60%;object-fit:contain;"></div>'; }
-  else if(it.line){ inner='<div class="catSheet-circle cat-line">'+CAT_ICONS.living+'</div>'; }
+  else if(it.line){ inner='<div class="catSheet-circle"><img src="'+CAT_PNG.living+'" style="width:60%;height:60%;object-fit:contain;display:block;"></div>'; }
   else { inner='<div class="catSheet-circle"><img src="'+it.src+'" style="width:60%;height:60%;object-fit:contain;display:block;"></div>'; }
   return '<div class="catSheet-cell" data-k="'+it.k+'">'+inner+'<div class="catSheet-label">'+it.n+'</div></div>';
 }
@@ -1168,7 +1192,7 @@ function beGridHTML(list){
     if(c.k==='food'){
       inner='<div class="be-circle" style="background-image:url('+LIST_FOOD_PNG+')"></div>';
     } else if(c.k==='living'){
-      inner='<div class="be-circle">'+CAT_ICONS.living+'</div>';
+      inner='<div class="be-circle"><img src="'+CAT_PNG.living+'" style="width:60%;height:60%;object-fit:contain;display:block;"></div>';
     } else {
       var src=CAT_PNG[c.k]||'';
       inner='<div class="be-circle"><img src="'+src+'" style="width:60%;height:60%;object-fit:contain;display:block;"></div>';
