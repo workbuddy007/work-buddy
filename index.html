@@ -499,45 +499,39 @@
 
 
 
-  /* 分类选择半屏弹窗（仅分类图标，点选即时生效） — 截图鲨鱼记账风格 */
+  /* 分类选择半屏弹窗 — 极简灰白线性图标，无边框/阴影/圆角/渐变/发光 */
 
-  .catSheet-mask{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:130;
+  .catSheet-mask{position:fixed;inset:0;background:transparent;z-index:130;
 
     display:none;opacity:0;transition:opacity .22s;}
 
   .catSheet-mask.show{display:block;opacity:1;}
 
-  .catSheet{position:absolute;left:0;right:0;bottom:0;border-radius:16px 16px 0 0;
+  .catSheet{position:absolute;left:0;right:0;bottom:0;
 
-    height:52vh;background:#fff;display:flex;flex-direction:column;overflow:hidden;
+    height:52vh;background:#f5f5f5;display:flex;flex-direction:column;overflow:hidden;}
 
-    box-shadow:0 -4px 24px rgba(0,0,0,.15);}
+  .catSheet-scroll{flex:1;overflow-y:auto;padding:14px 16px 24px;-webkit-overflow-scrolling:touch;}
 
-  .catSheet-head{font-size:15px;font-weight:600;color:#333;text-align:center;padding:14px 0 8px;
+  .catSheet-sec-title{font-size:15px;font-weight:700;color:#333;padding:10px 2px 12px;text-align:left;}
 
-    border-bottom:1px solid #f0f0f0;}
-
-  .catSheet-scroll{flex:1;overflow-y:auto;padding:10px 12px 16px;-webkit-overflow-scrolling:touch;}
-
-  .catSheet-sec-title{font-size:15px;font-weight:600;color:#333;padding:10px 2px 8px;}
-
-  .catSheet-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 0;}
+  .catSheet-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px 0;}
 
   .catSheet-cell{display:flex;flex-direction:column;align-items:center;gap:0;cursor:pointer;padding:0;
 
-    -webkit-tap-highlight-color:transparent;border-radius:8px;}
+    -webkit-tap-highlight-color:transparent;}
 
-  .catSheet-cell:active{background:#f5f5f5;}
+  .catSheet-cell:active{opacity:0.55;}
 
-  .catSheet-circle{width:52px;height:52px;border-radius:50%;background:#f5f5f5;
+  .catSheet-circle{width:52px;height:52px;border-radius:50%;background:#e9e9e9;
 
     display:flex;align-items:center;justify-content:center;}
 
-  .catSheet-circle.cat-line svg{width:32px;height:32px;stroke:#4a4a4a;stroke-width:1.5;fill:none;
+  .catSheet-circle svg{width:28px;height:28px;stroke:#444;stroke-width:1.5;fill:none;
 
     stroke-linecap:round;stroke-linejoin:round;}
 
-  .catSheet-label{font-size:13px;color:#666;font-weight:400;}
+  .catSheet-label{font-size:13px;color:#666;font-weight:400;margin-top:6px;text-align:center;}
 
 
 
@@ -1055,13 +1049,11 @@
 
 
 
-<!-- ========== 分类选择半屏弹窗（仅分类图标，点选即时生效） ========== -->
+<!-- ========== 分类选择半屏弹窗（极简灰白线性图标，点选即生效回填分类） ========== -->
 
 <div class="catSheet-mask" id="catSheetMask">
 
   <div class="catSheet">
-
-    <div class="catSheet-head">选择分类</div>
 
     <div class="catSheet-scroll" id="catSheetScroll"></div>
 
@@ -2192,21 +2184,37 @@ function openCatSheet(recId){
 
 function closeCatSheet(){ $('catSheetMask').classList.remove('show'); catSheetRecId=null; }
 
-/* 渲染半页分类面板（独立圆底图标网格，匹配参考图一布局） */
+/* 极简线性 SVG 图标（#444 描边，用于 catSheet 半屏弹窗；颜色可控、统一风格） */
+var CAT_SVG_ICONS = {
+  food:'<svg viewBox="0 0 24 24"><path d="M7 3v8a2.5 2.5 0 0 0 2.5 2.5V21"/><line x1="4.5" y1="3" x2="4.5" y2="9"/><line x1="9.5" y1="3" x2="9.5" y2="9"/><path d="M16 3c-1.5 0-2.5 1.5-2.5 4v4h2.5v10"/></svg>',
+  fruit:'<svg viewBox="0 0 24 24"><circle cx="8" cy="17" r="3.5"/><circle cx="16" cy="17" r="3.5"/><path d="M8 13.5C8 10 10 7 13 5"/><path d="M13 5C14.5 4 16.5 4.5 17 6"/></svg>',
+  daily:'<svg viewBox="0 0 24 24"><ellipse cx="12" cy="10" rx="7" ry="3.5"/><path d="M5 10v6c0 1.9 3.1 3.5 7 3.5s7-1.6 7-3.5v-6"/><path d="M5 10c0 1.9 3.1 3.5 7 3.5s7-1.6 7-3.5"/></svg>',
+  transport:'<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="15" rx="2"/><line x1="4" y1="11" x2="20" y2="11"/><circle cx="8" cy="20" r="1.2"/><circle cx="16" cy="20" r="1.2"/></svg>',
+  shop:'<svg viewBox="0 0 24 24"><path d="M5 8h14l-1.2 13H6.2L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>',
+  cloth:'<svg viewBox="0 0 24 24"><path d="M7 4l2-2h6l2 2 4 3-2 4-2-1v10H7V10l-2 1-2-4 4-3z"/></svg>',
+  comms:'<svg viewBox="0 0 24 24"><path d="M5 4h4l2 4-2.5 1.5c1 3 3 5 6 6L16 13l4 2v4c0 .5-.5 1-1 1-9 0-16-7-16-16 0-.5.5-1 1-1z"/></svg>',
+  gp:'<svg viewBox="0 0 24 24"><path d="M7 9h10a5 5 0 0 1 5 5v1a3 3 0 0 1-6 0v-1H8v1a3 3 0 0 1-6 0v-1a5 5 0 0 1 5-5z"/><line x1="9" y1="12" x2="9" y2="14"/><line x1="10.5" y1="11" x2="10.5" y2="15"/><line x1="12" y1="12" x2="12" y2="14"/></svg>',
+  salary:'<svg viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-2 2-2-2-2 2-2-2-1 1V3z"/><polyline points="9,8 12,5 15,8"/><line x1="12" y1="5" x2="12" y2="15"/></svg>',
+  living:'<svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-4v-6h-8v6H4a1 1 0 0 1-1-1v-9z"/></svg>',
+  redpacket:'<svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="1"/><path d="M3 7l9 6 9-6"/><line x1="12" y1="13" x2="12" y2="20"/></svg>',
+  finance:'<svg viewBox="0 0 24 24"><polyline points="3,18 9,12 13,15 21,6"/><polyline points="16,6 21,6 21,11"/></svg>'
+};
+
+/* 渲染半页分类面板（极简灰白线性图标网格，点选即生效回填分类） */
 function renderCatSheet(){
   var scroll=$('catSheetScroll');
   /* 支出区：4列×2行 */
   var expCells = EXP_CATS.map(function(c){
-    var ico = CAT_ICON_PNG[c.k] || '';
+    var ico = CAT_SVG_ICONS[c.k] || '';
     return '<div class="catSheet-cell" data-k="'+c.k+'" data-n="'+c.n+'" data-type="exp">'+
-      '<div class="catSheet-circle"><img src="'+ico+'" style="width:100%;height:100%;object-fit:contain;display:block;border-radius:50%;"></div>'+
+      '<div class="catSheet-circle">'+ico+'</div>'+
       '<div class="catSheet-label">'+c.n+'</div></div>';
   }).join('');
-  /* 收入区：4列×1行（间距更紧凑） */
+  /* 收入区：4列×1行 */
   var incCells = INC_CATS.map(function(c){
-    var ico = CAT_ICON_PNG[c.k] || '';
+    var ico = CAT_SVG_ICONS[c.k] || '';
     return '<div class="catSheet-cell" data-k="'+c.k+'" data-n="'+c.n+'" data-type="inc">'+
-      '<div class="catSheet-circle"><img src="'+ico+'" style="width:100%;height:100%;object-fit:contain;display:block;border-radius:50%;"></div>'+
+      '<div class="catSheet-circle">'+ico+'</div>'+
       '<div class="catSheet-label">'+c.n+'</div></div>';
   }).join('');
   scroll.innerHTML =
@@ -2214,7 +2222,7 @@ function renderCatSheet(){
     '<div class="catSheet-grid">'+expCells+'</div>'+
     '<div class="catSheet-sec-title" style="padding-top:6px;">收入</div>'+
     '<div class="catSheet-grid">'+incCells+'</div>';
-  /* 绑定点击 */
+  /* 绑定点击 — 立即关闭并把分类名填回记录 */
   scroll.querySelectorAll('.catSheet-cell').forEach(function(cell){
     cell.addEventListener('click', function(){
       var k=this.getAttribute('data-k');
