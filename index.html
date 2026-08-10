@@ -695,14 +695,34 @@
 
   .be-save:active{background:#92b869;}
 
-  /* be-sheet 金额-only 模式（分类已选，只显示金额/备注/日期/键盘，半屏从底部上滑） */
+  /* be-sheet 金额-only 模式（鲨鱼记账风格：白底、右上正常字重金额、备注框、4列键盘） */
   .be-mask.amount-only .be-top{display:none;}
-  .be-mask.amount-only .be-sheet{height:62vh;background:#f5f5f5;box-shadow:none;border-radius:18px 18px 0 0;}
-  .be-mask.amount-only .be-bottom{flex:1 1 100%;background:#f5f5f5;border-radius:18px 18px 0 0;padding-top:16px;}
-  .be-mask.amount-only .be-amount-display{color:#333;}
-  .be-mask.amount-only .be-remark-input{background:#eee;color:#555;}
-  .be-mask.amount-only .be-keypad{background:#e8e8e8;}
-  .be-mask.amount-only .be-key-done{background:#8BC34A;color:#fff;}
+  .be-mask.amount-only .be-sheet{height:auto;max-height:68vh;background:#fff;box-shadow:0 -4px 20px rgba(0,0,0,.10);border-radius:16px 16px 0 0;}
+  .be-mask.amount-only .be-bottom{flex:1 1 100%;background:#fff;padding:0;display:flex;flex-direction:column;}
+
+  /* 金额显示：右上对齐、正常字重（不加粗放大）、与鲨鱼记账一致 */
+  .be-mask.amount-only .be-amount-row{justify-content:flex-end;padding:16px 20px 4px;border-bottom:none;}
+  .be-mask.amount-only .be-amount-display{text-align:right;font-size:28px;font-weight:400;color:#333;flex:none;}
+  .be-mask.amount-only .be-amount-display.empty{color:#ccc;}
+  .be-mask.amount-only .be-date-btn{display:none;}  /* 隐藏日期按钮（日期在键盘里） */
+
+  /* 备注输入框：浅灰底 + 提示文字 */
+  .be-mask.amount-only .be-remark-input{background:#f5f5f5;color:#333;border-radius:8px;padding:12px 14px;font-size:14px;margin:8px 16px 0;}
+  .be-mask.amount-only .be-remark-input::placeholder{color:#bbb;}
+
+  /* 数字键盘：4列网格、白键灰缝、与截图一致 */
+  .be-mask.amount-only .be-keypad{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin:12px 0 0;background:#eee;border-radius:0;overflow:hidden;min-height:260px;}
+  .be-mask.amount-only .be-key{font-size:22px;font-weight:400;color:#333;background:#fff;min-height:56px;border-radius:0;}
+  .be-mask.amount-only .be-key:active{background:#f0f0f0;}
+
+  /* 日期键：日历图标+今天文字 */
+  .be-mask.amount-only .be-key-date{font-size:15px;font-weight:400;color:#666;background:#fff;display:flex;align-items:center;gap:4px;justify-content:center;}
+  .be-mask.amount-only .be-key-op{font-size:24px;color:#666;background:#fafafa;}
+  .be-mask.amount-only .be-key-del{font-size:20px;color:#666;background:#fff;}
+
+  /* 完成按钮：抹茶绿（唯一有颜色的键） */
+  .be-mask.amount-only .be-key-done{background:#8BC34A;color:#fff;font-size:17px;font-weight:600;border-radius:0;}
+  .be-mask.amount-only .be-key-done:active{background:#7CB342;}
 
 
   /* ========== 整页分类下的记账编辑区（cat-edit） ========== */
@@ -1002,14 +1022,14 @@
 
       </div>
 
-      <input class="be-remark-input" id="beRemark" type="text" placeholder="备注（选填）">
+      <input class="be-remark-input" id="beRemark" type="text" placeholder="点击填写备注">
 
       <div class="be-keypad" id="beKeypad">
 
         <button class="be-key" data-k="7">7</button>
         <button class="be-key" data-k="8">8</button>
         <button class="be-key" data-k="9">9</button>
-        <button class="be-key be-key-date" data-k="date">📅</button>
+        <button class="be-key be-key-date" data-k="date"><svg viewBox="0 0 24 24" width="18" height="18" style="vertical-align:-3px"><rect x="3" y="4" width="18" height="18" rx="2" fill="none" stroke="#666" stroke-width="1.5"/><line x1="3" y1="10" x2="21" y2="10" stroke="#666" stroke-width="1.5"/><line x1="8" y1="2" x2="8" y2="6" stroke="#666" stroke-width="1.5" stroke-linecap="round"/><line x1="16" y1="2" x2="16" y2="6" stroke="#666" stroke-width="1.5" stroke-linecap="round"/></svg>今天</button>
 
         <button class="be-key" data-k="4">4</button>
         <button class="be-key" data-k="5">5</button>
