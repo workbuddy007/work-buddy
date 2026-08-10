@@ -523,15 +523,11 @@
 
   .catSheet-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 0;}
 
-  .catSheet-cell{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;padding:8px 0;
+  .catSheet-cell{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:8px 0;
 
     -webkit-tap-highlight-color:transparent;border-radius:8px;}
 
   .catSheet-cell:active{background:#f5f5f5;}
-
-  .catSheet-cell.sel{background:#e8f0e3;}
-
-  .catSheet-cell.sel .catSheet-circle{background:#dce8d4;}
 
   .catSheet-circle{width:52px;height:52px;border-radius:50%;background:#f5f5f5;
 
@@ -1729,7 +1725,7 @@ $('catClose').addEventListener('click', function(){
 
 
 
-/* 点击分类 → 全页内选中分类（不再跳转弹窗） */
+/* 点击分类 → 关闭整页分类，弹出记账编辑弹窗（be-sheet） */
 
 function bindCatClick(el){
 
@@ -1749,11 +1745,35 @@ function bindCatClick(el){
 
     for(var i=0;i<INC_CATS.length;i++){ if(INC_CATS[i].k===k){ type='inc'; break; } }
 
-    /* 高亮选中：先清除旧选中 */
-    el.querySelectorAll('.catSheet-cell.sel').forEach(function(c){ c.classList.remove('sel'); });
-    cell.classList.add('sel');
-    catPickerCtx.cat = k;
-    catPickerCtx.type = type;
+    /* 关闭整页分类 */
+
+    $('catMask').classList.remove('show');
+
+    /* 新建或编辑记录 → 弹出 be-sheet 记账编辑弹窗 */
+
+    var recId = catPickerCtx.recId;
+
+    if(!recId){
+
+      /* 新增模式：创建占位记录 */
+
+      var td = new Date();
+
+      recId = 'r_'+Date.now();
+
+      var newRec = {id:recId, type:type, cat:k, amount:0, remark:'',
+
+        date:{y:td.getFullYear(),m:td.getMonth()+1,d:td.getDate()}, time:pad(td.getHours())+':'+pad(td.getMinutes())};
+
+      records.unshift(newRec);
+
+      renderFlow(); renderHeader();
+
+    }
+
+    /* 延迟等 mask 动画关闭后再打开 be-sheet */
+
+    setTimeout(function(){ openBillEdit(recId, 'full'); }, 150);
 
   });
 
