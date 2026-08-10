@@ -256,7 +256,7 @@
 
     background:#fff;display:flex;flex-direction:column;
 
-    overflow-y:auto;box-sizing:border-box;}
+    overflow-y:auto;box-sizing:border-box;padding-top:44px;}
 
   /* 全页顶部栏（标题 + 关闭） */
 
@@ -863,9 +863,7 @@
 
   <div class="cat-sheet">
 
-    <div class="cat-topbar"><span id="catTopTitle">选择分类</span></div>
-
-    <div class="cat-close" id="catClose">&times;</div>
+  <div class="cat-close" id="catClose">&times;</div>
 
     <div class="cat-section">
 
@@ -881,22 +879,6 @@
 
       <div class="cat-grid" id="catGridInc"></div>
 
-    </div>
-
-    <!-- 记账编辑区：金额 + 备注 + 键盘 -->
-    <div class="cat-edit" id="catEdit">
-      <div class="cat-edit-amt-row">
-        <span></span>
-        <span class="cat-edit-amt" id="catAmtDisplay">0.00</span>
-      </div>
-      <input class="cat-edit-rmk" id="catRemark" type="text" placeholder="备注（选填）">
-      <div class="cat-edit-kp" id="catKeypad">
-        <button class="cat-edit-key" data-k="7">7</button><button class="cat-edit-key" data-k="8">8</button><button class="cat-edit-key" data-k="9">9</button><button class="cat-edit-key cat-edit-date" id="catDateBtn">2026/08/10</button>
-        <button class="cat-edit-key" data-k="4">4</button><button class="cat-edit-key" data-k="5">5</button><button class="cat-edit-key" data-k="6">6</button><button class="cat-edit-key cat-edit-op" data-k="+">+</button>
-        <button class="cat-edit-key" data-k="1">1</button><button class="cat-edit-key" data-k="2">2</button><button class="cat-edit-key" data-k="3">3</button><button class="cat-edit-key cat-edit-op" data-k="-">−</button>
-        <button class="cat-edit-key" data-k=".">.</button><button class="cat-edit-key" data-k="0">0</button><button class="cat-edit-key cat-edit-del" data-k="del">⌫</button><button class="cat-edit-key cat-edit-done" id="catEditSave">完成</button>
-      </div>
-      <input id="catAmount" type="hidden">
     </div>
 
   </div>
@@ -1668,19 +1650,6 @@ function openCatFullPage(recId){
   }).join('');
   $('catGridInc').innerHTML = '<div class="catSheet-grid">'+incCells+'</div>';
 
-  $('catTopTitle').textContent = catPickerCtx.recId ? '记账' : '记账';
-
-  /* 初始化编辑区状态 */
-  catPickerCtx.cat = null;
-  catPickerCtx.type = 'exp';
-  catPickerCtx.amtStr = '';
-  catEditUpdateDisplay();
-
-  /* 设置日期按钮为今天 */
-  var td = new Date();
-  $('catDateBtn').textContent = td.getFullYear()+'/'+pad(td.getMonth()+1)+'/'+pad(td.getDate());
-  catPickerCtx.date = {y:td.getFullYear(), m:td.getMonth()+1, d:td.getDate()};
-
   $('catMask').classList.add('show');
 
 }
@@ -1746,13 +1715,19 @@ function bindCatClick(el){
 
     $('catMask').classList.remove('show');
 
-    /* 新建或编辑记录 → 弹出 be-sheet 记账编辑弹窗 */
-
     var recId = catPickerCtx.recId;
 
-    if(!recId){
+    if(recId){
 
-      /* 新增模式：创建占位记录 */
+      /* 编辑已有条目：把所点分类回填到该条目 */
+
+      var r = findRec(recId);
+
+      if(r){ r.cat = k; r.type = type; renderFlow(); renderHeader(); }
+
+    } else {
+
+      /* 新增模式：创建占位记录并带上所点分类 */
 
       var td = new Date();
 
@@ -1768,7 +1743,7 @@ function bindCatClick(el){
 
     }
 
-    /* 延迟等 mask 动画关闭后再打开 be-sheet */
+    /* 延迟等 mask 动画关闭后再弹出底部 be-sheet 记账编辑面板 */
 
     setTimeout(function(){ openBillEdit(recId, 'full'); }, 150);
 
@@ -2205,16 +2180,16 @@ function renderCatSheet(){
   var scroll=$('catSheetScroll');
   /* 支出区：4列×2行 */
   var expCells = EXP_CATS.map(function(c){
-    var ico = CAT_SVG_ICONS[c.k] || '';
+    var ico = CAT_ICON_PNG[c.k] || '';
     return '<div class="catSheet-cell" data-k="'+c.k+'" data-n="'+c.n+'" data-type="exp">'+
-      '<div class="catSheet-circle">'+ico+'</div>'+
+      '<div class="catSheet-circle"><img src="'+ico+'" style="width:100%;height:100%;object-fit:contain;display:block;border-radius:50%;"></div>'+
       '<div class="catSheet-label">'+c.n+'</div></div>';
   }).join('');
   /* 收入区：4列×1行 */
   var incCells = INC_CATS.map(function(c){
-    var ico = CAT_SVG_ICONS[c.k] || '';
+    var ico = CAT_ICON_PNG[c.k] || '';
     return '<div class="catSheet-cell" data-k="'+c.k+'" data-n="'+c.n+'" data-type="inc">'+
-      '<div class="catSheet-circle">'+ico+'</div>'+
+      '<div class="catSheet-circle"><img src="'+ico+'" style="width:100%;height:100%;object-fit:contain;display:block;border-radius:50%;"></div>'+
       '<div class="catSheet-label">'+c.n+'</div></div>';
   }).join('');
   scroll.innerHTML =
@@ -2597,59 +2572,6 @@ $('beKeypad').querySelectorAll('.be-key').forEach(function(btn){
     beKeyPress(k);
   });
 });
-
-/* ========== 整页分类编辑区事件绑定 ========== */
-
-/* 数字键盘 */
-$('catKeypad').querySelectorAll('.cat-edit-key').forEach(function(btn){
-  btn.addEventListener('click', function(){
-    var k = this.getAttribute('data-k');
-    if(this.classList.contains('cat-edit-done')){ /* 完成→保存 */ catEditSaveClick(); return; }
-    if(k==='+'||k==='-') return;
-    catEditKeyPress(k);
-  });
-});
-
-/* 日期按钮 */
-$('catDateBtn').addEventListener('click', function(e){
-  e.stopPropagation();
-  openDatePicker(new Date(catPickerCtx.date.y, catPickerCtx.date.m-1, catPickerCtx.date.d), function(d){
-    catPickerCtx.date = {y:d.getFullYear(), m:d.getMonth()+1, d:d.getDate()};
-    $('catDateBtn').textContent = d.getFullYear()+'/'+pad(d.getMonth()+1)+'/'+pad(d.getDate());
-  });
-});
-
-/* 取消：关闭整页 */
-$('catEditCancel').addEventListener('click', function(){
-  $('catMask').classList.remove('show');
-});
-
-/* 保存 */
-function catEditSaveClick(){
-  if(!catPickerCtx.cat){ showToast('请先选择分类'); return; }
-  var amtVal = parseFloat($('catAmount').value);
-  if(!amtVal || amtVal <= 0){ showToast('请输入金额'); return; }
-  var rec = {
-    id: catPickerCtx.recId || ('r_'+Date.now()),
-    type: catPickerCtx.type,
-    cat: catPickerCtx.cat,
-    amount: amtVal,
-    remark: $('catRemark').value.trim(),
-    date: catPickerCtx.date
-  };
-  if(catPickerCtx.recId){
-    var idx = recs.findIndex(function(r){ return r.id === catPickerCtx.recId; });
-    if(idx >= 0) { recs[idx] = rec; }
-  } else {
-    recs.unshift(rec);
-  }
-  saveRecs();
-  renderFlow();
-  renderHeader();
-  $('catMask').classList.remove('show');
-  showToast('已保存');
-}
-$('catEditSave').addEventListener('click', catEditSaveClick);
 
 </script>
 
