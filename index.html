@@ -523,7 +523,7 @@
 
   .catSheet-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 0;}
 
-  .catSheet-cell{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:8px 0;
+  .catSheet-cell{display:flex;flex-direction:column;align-items:center;gap:1px;cursor:pointer;padding:4px 0;
 
     -webkit-tap-highlight-color:transparent;border-radius:8px;}
 
@@ -1631,10 +1631,14 @@ var CLICK_ZONES_INC = [
 
 
 function renderCatGrid(el, list, selectedKey){
-  var zones = CLICK_ZONES_FULL.map(function(z){
-    return '<div class="ref-click-zone" data-k="'+z.k+'" data-n="'+z.n+'" style="left:'+z.l+'%;top:'+z.t+'%;width:'+z.w+'%;height:'+z.h+'%"></div>';
+  var cells = list.map(function(c){
+    var ico = CAT_ICON_PNG[c.k] || '';
+    var sel = (selectedKey && c.k===selectedKey) ? ' sel' : '';
+    return '<div class="catSheet-cell'+sel+'" data-k="'+c.k+'" data-n="'+c.n+'" data-type="exp">'+
+      '<div class="catSheet-circle"><img src="'+ico+'" style="width:100%;height:100%;object-fit:contain;display:block;border-radius:50%;"></div>'+
+      '<div class="catSheet-label">'+c.n+'</div></div>';
   }).join('');
-  el.innerHTML = '<div class="ref-icon-img-wrap"><img src="'+REF_FULL+'" style="width:100%;display:block">'+zones+'</div>';
+  el.innerHTML = '<div class="catSheet-grid">'+cells+'</div>';
 }
 
 
