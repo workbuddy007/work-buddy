@@ -695,6 +695,40 @@
 
   .be-save:active{background:#92b869;}
 
+  
+  /* ========== 加号新增弹窗：上下对半（上=分类，下=键盘） ========== */
+  .be-mask.split-new .be-sheet{height:85vh;background:#fff;border-radius:16px 16px 0 0;
+    box-shadow:0 -4px 20px rgba(0,0,0,.12);}
+  .be-mask.split-new .be-top{flex:1 1 50%;background:#fff;overflow-y:auto;padding:8px 10px 4px;}
+  .be-mask.split-new .be-bottom{flex:1 1 50%;background:#fff;padding:0;display:flex;flex-direction:column;}
+  .be-title-row{display:flex;align-items:center;justify-content:space-between;padding:0 2px 6px;}
+  .be-mask.split-new .be-title{font-size:15px;font-weight:600;color:#333;text-align:left;margin:0;}
+  .be-cancel-btn{font-size:15px;font-weight:500;color:#888;background:none;border:none;cursor:pointer;
+    padding:4px 10px;border-radius:6px;-webkit-tap-highlight-color:transparent;}
+  .be-cancel-btn:active{background:#f0f0f0;color:#333;}
+  .be-mask.split-new .be-sec-title{font-size:13px;font-weight:600;color:#999;padding:6px 2px 4px;}
+  .be-mask.split-new .be-grid{gap:8px 0;}
+  .be-mask.split-new .be-cell{padding:4px 0;gap:4px;}
+  .be-mask.split-new .be-circle{width:44px;height:44px;background:#f5f5f5;}
+  .be-mask.split-new .be-catlabel{font-size:11px;color:#666;}
+  .be-mask.split-new .be-cell.sel .be-circle{background:#e8e8e8;}
+  .be-mask.split-new .be-cell.sel .be-catlabel{color:#333;}
+  .be-mask.split-new .be-amount-row{justify-content:flex-end;padding:8px 16px 2px;border-bottom:none;}
+  .be-mask.split-new .be-amount-display{text-align:right;font-size:28px;font-weight:400;color:#333;flex:none;}
+  .be-mask.split-new .be-amount-display.empty{color:#ccc;}
+  .be-mask.split-new .be-date-btn{display:none;}
+  .be-mask.split-new .be-remark-input{background:#f5f5f5;color:#333;border-radius:8px;padding:10px 14px;font-size:14px;margin:6px 14px 0;}
+  .be-mask.split-new .be-remark-input::placeholder{color:#bbb;}
+  .be-mask.split-new .be-keypad{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin:10px 0 0;
+    background:#eee;border-radius:0;overflow:hidden;min-height:240px;}
+  .be-mask.split-new .be-key{font-size:22px;font-weight:400;color:#333;background:#fff;min-height:54px;border-radius:0;}
+  .be-mask.split-new .be-key:active{background:#f0f0f0;}
+  .be-mask.split-new .be-key-date{font-size:15px;font-weight:400;color:#666;background:#fff;display:flex;align-items:center;gap:4px;justify-content:center;}
+  .be-mask.split-new .be-key-op{font-size:24px;color:#666;background:#fafafa;}
+  .be-mask.split-new .be-key-del{font-size:20px;color:#666;background:#fff;}
+  .be-mask.split-new .be-key-done{background:#8BC34A;color:#fff;font-size:17px;font-weight:600;border-radius:0;}
+  .be-mask.split-new .be-key-done:active{background:#7CB342;}
+
   /* be-sheet 金额-only 模式（鲨鱼记账风格：白底、右上正常字重金额、备注框、4列键盘） */
   .be-mask.amount-only .be-top{display:none;}
   .be-mask.amount-only .be-sheet{height:auto;max-height:68vh;background:#fff;box-shadow:0 -4px 20px rgba(0,0,0,.10);border-radius:16px 16px 0 0;}
@@ -1004,7 +1038,10 @@
 
     <div class="be-top">
 
-      <div class="be-title" id="beTitle">选择分类</div>
+      <div class="be-title-row">
+        <div class="be-title" id="beTitle">选择分类</div>
+        <button class="be-cancel-btn" id="beCancelBtn" type="button">取消</button>
+      </div>
 
       <div id="beCatExp"></div>
 
@@ -1671,6 +1708,36 @@ function renderCatGrid(el, list, selectedKey){
 
 
 
+
+
+/* ===== 打开新增记账弹窗（上下对半：上半分类+下半键盘） ===== */
+function openNewRecordSheet(){
+  var td = new Date();
+  var recId = "r_"+Date.now();
+  beState = {
+    mode: "split-new", recId: recId,
+    cat: null, type: "exp",
+    amount: 0, remark: "",
+    date: {y: td.getFullYear(), m: td.getMonth()+1, d: td.getDate()},
+    time: pad(td.getHours())+":"+pad(td.getMinutes())
+  };
+  beAmountStr = "";
+  $("beAmount").value = "";
+  beUpdateAmountDisplay();
+  $("beRemark").value = "";
+  $("beDateBtn").textContent = td.getFullYear()+"/"+pad(td.getMonth()+1)+"/"+pad(td.getDate());
+  renderBeCats();
+  $("beMask").classList.remove("amount-only");
+  $("beMask").classList.add("split-new");
+  $("beMask").classList.add("show");
+}
+$("beCancelBtn").addEventListener("click", function(){
+  $("beMask").classList.remove("show");
+  $("beMask").classList.remove("split-new");
+  $("beMask").classList.remove("amount-only");
+  beState = null;
+});
+
 /* ===== 打开全页分类页面（点击条目空白区域 / 底部加号） ===== */
 
 var catPickerCtx = { recId: null };
@@ -1960,7 +2027,7 @@ document.querySelector('.ph-tab-add').addEventListener('click', function(){
 
   /* 打开全页分类页面（新增账单：选分类 → 记金额） */
 
-  openCatFullPage(null);
+  openNewRecordSheet();
 
 });
 
@@ -2581,9 +2648,32 @@ function openBillEdit(recId, mode){
 /* 保存：下半区（金额/备注/日期）生效；完整模式连分类一并生效 */
 function beSaveClick(){
   if(!beState) return;
-  var rec=findRec(beState.recId); if(!rec) return;
   var amt=parseFloat($('beAmount').value);
   if(isNaN(amt)||amt<=0){ showToast('请输入有效金额'); return; }
+
+  /* split-new 模式：新建记录 */
+  if(beState.mode==='split-new'){
+    if(!beState.cat){ showToast('请先选择分类'); return; }
+    var newRec = {
+      id: beState.recId,
+      type: beState.type,
+      cat: beState.cat,
+      amount: amt,
+      remark: $('beRemark').value.trim(),
+      date: {y:beState.date.y, m:beState.date.m, d:beState.date.d},
+      time: beState.time
+    };
+    records.unshift(newRec);
+    renderFlow(); renderHeader();
+    $('beMask').classList.remove('show');
+    $('beMask').classList.remove('split-new');
+    $('beMask').classList.remove('amount-only');
+    beState = null;
+    return;
+  }
+
+  /* 其他模式：编辑已有记录 */
+  var rec=findRec(beState.recId); if(!rec) return;
   rec.amount=amt;
   rec.remark=$('beRemark').value.trim();
   rec.date={y:beState.date.y,m:beState.date.m,d:beState.date.d};
@@ -2609,14 +2699,16 @@ $('beCancel').addEventListener('click', function(){
 
 
 
-/* 点击金额弹窗外的空白遮罩 → 关闭并放弃本次记账（仅金额-only 模式） */
+/* 点击金额弹窗外的空白遮罩 → 关闭并放弃本次记账（仅 amount-only 模式放弃新建） */
 $('beMask').addEventListener('click', function(e){
   if(e.target===this){
     if(beState && beState.mode==='amount'){
       var idx = records.findIndex(function(r){ return r.id===beState.recId; });
       if(idx>=0){ records.splice(idx,1); renderFlow(); renderHeader(); }
     }
+    /* split-new 模式：直接关闭，不创建记录 */
     $('beMask').classList.remove('show');
+    $('beMask').classList.remove('split-new');
     $('beMask').classList.remove('amount-only');
     beState=null;
   }
